@@ -1,0 +1,1 @@
+SELECT Sales.ProductName FROM Sales ORDER BY Sales.QuantitySold DESC LIMIT 10;

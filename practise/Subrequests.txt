@@ -1,0 +1,102 @@
+DROP TABLE IF EXISTS companies;
+DROP TABLE IF EXISTS users;
+CREATE TABLE companies(
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    name TEXT NOT NULL
+);
+CREATE TABLE users(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    age INTEGER,
+    company_id INTEGER
+);
+
+INSERT INTO companies (name) VALUES
+('Microsoft'),
+('Google');
+
+INSERT INTO users (name, age, company_id) VALUES
+('Дмитрий', 37, (SELECT id FROM companies WHERE name='Microsoft')),
+('Максим', 41, (SELECT id FROM companies WHERE name='Google')),
+('Андрей', 25, (SELECT id FROM companies WHERE name='Microsoft')),
+('Екатерина', 33, (SELECT id FROM companies WHERE name='Google'));
+ 
+SELECT * FROM users;
+
+SELECT * FROM users
+WHERE age > (SELECT AVG(age) FROM users);
+
+SELECT name, age, 
+        (SELECT name FROM companies 
+        WHERE companies.id = users.company_id) AS company
+FROM users;
+
+SELECT name, age, (SELECT AVG(age) FROM users AS add_user WHERE add_user.company_id=user.company_id) AS avg_age
+FROM users AS user
+WHERE age > (SELECT AVG(age) FROM users AS add_user WHERE add_user.company_id=user.company_id);
+
+
+
+--Подзапросы в основных командах
+
+INSERT INTO companies (name) VALUES ('JetBrains');
+
+INSERT INTO users (name, age, company_id) VALUES
+('Ольга', 45, (SELECT id FROM companies WHERE name='JetBrains'));
+
+SELECT * FROM users
+WHERE age > (SELECT AVG(age) FROM users);
+
+SELECT * FROM users
+WHERE company_id IN (SELECT id FROM companies WHERE name='Microsoft' OR name='Google');
+
+SELECT * FROM users
+WHERE age IN ((SELECT MIN(age) FROM users), 
+            (SELECT MAX(age) FROM users));
+            
+SELECT * FROM users
+WHERE age BETWEEN
+    (SELECT AVG(age) FROM users) AND
+    (SELECT MAX(age) FROM users);
+    
+SELECT *, 
+(SELECT name FROM companies WHERE id=users.company_id) AS company 
+FROM users;
+
+INSERT INTO users (name, age, company_id) VALUES
+('Игорь', 37, (SELECT id FROM companies WHERE name='JetBrains'));
+
+--Команда UPDATE
+
+UPDATE users SET age = age + 3
+WHERE company_id = (SELECT id FROM companies WHERE name='Microsoft');
+
+UPDATE users SET age = (SELECT MAX(age) FROM users)
+WHERE id = 1;
+
+--Команда DELETE
+
+DELETE FROM users
+WHERE company_id=(SELECT id FROM companies WHERE name='Microsoft');
+
+
+--Команда EXISTS
+
+INSERT INTO companies (name) VALUES ('Oracle');
+INSERT INTO users (name, age, company_id) VALUES
+('Дмитрий', 33, NULL);
+
+SELECT
+    EXISTS(SELECT id FROM companies WHERE name='Microsoft') AS microsoft,
+    EXISTS(SELECT id FROM companies WHERE name='Apple') AS apple;
+    
+SELECT * FROM companies
+WHERE EXISTS 
+(SELECT * FROM users WHERE users.company_id = companies.id);
+
+SELECT * FROM companies
+WHERE id IN (SELECT company_id FROM users);
+
+SELECT * FROM companies
+WHERE NOT EXISTS 
+(SELECT * FROM users WHERE users.company_id = companies.id);

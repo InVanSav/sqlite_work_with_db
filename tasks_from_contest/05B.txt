@@ -1,0 +1,41 @@
+WITH RECURSIVE Restore (id, parent_id, object_name) AS
+(
+	SELECT windows_fs_table.id, windows_fs_table.parent_id, windows_fs_table.object_name ||
+		CASE 
+			WHEN windows_fs_table.object_type = 'root'
+			THEN ':'
+			WHEN windows_fs_table.object_type = 'dir'
+			THEN '\'
+			WHEN windows_fs_table.object_type = 'file' AND windows_fs_table.extension IS NOT NULL
+			THEN '.' || windows_fs_table.extension
+			WHEN windows_fs_table.object_type = 'file'
+			THEN ''
+		END
+	FROM windows_fs_table
+	WHERE windows_fs_table.parent_id IS NULL
+	UNION ALL
+	SELECT windows_fs_table.id , windows_fs_table.parent_id, Restore.object_name ||
+		CASE 
+			WHEN windows_fs_table.object_type = 'file' 
+			THEN ''
+			ELSE '\'
+		END
+			|| windows_fs_table.object_name ||
+		CASE 
+			WHEN windows_fs_table.object_type = 'root'
+			THEN ':'
+			WHEN windows_fs_table.object_type = 'dir'
+			THEN '\'
+			WHEN windows_fs_table.object_type = 'file' 
+				AND windows_fs_table.extension IS NOT NULL
+			THEN '.' || windows_fs_table.extension
+			WHEN windows_fs_table.object_type = 'file'
+			THEN ''
+		END
+	FROM windows_fs_table 
+	JOIN Restore 
+	ON Restore.id = windows_fs_table.parent_id
+)
+SELECT Restore.object_name AS full_name 
+FROM Restore
+ORDER BY Restore.id;

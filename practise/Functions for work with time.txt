@@ -1,0 +1,166 @@
+--CASE
+--    WHEN условие1 THEN результат1
+--    WHEN условие2 THEN результат2
+--    ...
+--    WHEN условиеN THEN результатN
+--    [ELSE альтернативный результат]
+--END
+
+SELECT name, items_count, 
+CASE
+    WHEN items_count = 1 
+        THEN 'Товар заканчивается'
+    WHEN items_count = 2 
+        THEN 'Мало товара'
+    WHEN items_count = 3 
+        THEN 'Есть в наличии'
+    ELSE 'Много товара'
+END AS category
+FROM products;
+
+SELECT name, company, items_count,
+    IIF(items_count > 2, 'Много товара', 'Мало товара') AS status
+FROM products;
+
+SELECT name, company, items_count,
+    IIF(items_count == 1, 'Товар заканчивается', 
+        IIF(items_count==2, 'Мало товара', 
+            IIF(items_count==3, 'Есть в наличии', 'Много товара'))) AS status
+FROM products;
+
+SELECT ROUND(236.345, 2);
+SELECT ABS(-123);
+SELECT RANDOM(), RANDOM();
+SELECT MAX(12, 10, 21);
+SELECT MIN(12, 10);
+
+SELECT length('строка');
+SELECT ltrim('  Apple');
+SELECT ltrim('iPhone 13 Pro', 'iPhone');
+SELECT rtrim('Apple  ');
+SELECT rtrim('iPhone 13 Pro', 'Pro');
+SELECT trim('   Apple  ');
+SELECT trim('iPhone 13 Pro', '3 Pro');
+SELECT substr('Индексация', 8, 3), substring('Индексация', 2, 3);
+SELECT substr('Индексация', 8), substring('Индексация', 2);
+SELECT replace('iPhone 12 Pro', '12 Pro', '13'); 
+SELECT lower('Apple');
+SELECT upper('Apple');
+SELECT instr('Индексация', 'са');
+
+--Функции работы с временем и датами
+DATE();
+TIME();
+DATETIME();
+JULIANDAY(); - вычисляет кол-во дней с начала юлианского периода (24 ноября 4714 до н.э.) в виде значения REAL
+STRFTIME(); - форматирует дату
+--пример, SELECT strftime('%d.%m.%Y', '2021-12-01');
+
+
+
+SELECT date() AS date, 
+    time() AS time,
+    datetime() AS datetime,
+    julianday() AS julian;
+    
+SELECT date('2004-04-21') AS date,              -- YYYY-MM-DD
+    time('16:45:21') AS time,                   -- HH:MM:SS
+    datetime('2004-04-21T16:45') AS datetime,   --  YYYY-MM-DDTHH:MM 
+    julianday('2004-04-21 16:45:21') AS julian; -- YYYY-MM-DD HH:MM:SS
+  
+-- NNN days    
+-- NNN hours
+-- NNN minutes
+-- NNN.NNNN seconds
+-- NNN months
+-- NNN years
+-- start of month
+-- start of years
+-- start of day
+-- weekday (0 - воскресение, 1 - понедельник...6 - суббота)
+-- unixepoch (работает правильно только с форматом DDDDDDDDDD)
+
+--форматы даты и времени:
+-- 	YYYY-MM-DD
+-- 	YYYY-MM-DD HH:MM
+-- 	YYYY-MM-DD HH:MM:SS
+-- 	YYYY-MM-DD HH:MM:SS.SSS
+-- 	YYYY-MM-DDTHH:MM (в качестве разделителя между датой и временем применяется символ T по стандарту ISO-8601)
+-- 	YYYY-MM-DDTHH:MM:SS
+-- 	YYYY-MM-DDTHH:MM:SS.SSS
+--	HH:MM
+--	HH:MM:SS
+--	HH:MM:SS.SSS
+--	now - текущие дата и время
+-- 	пример, SELECT datetime('now');
+--  DDDDDDDDDD - кол-во дней с начала юлианской эпохи, в виде значения INTEGER или REAL
+-- 	пример, SELECT datetime(1092941466);
+
+
+	
+SELECT date('2021-12-31', '-7 days');
+SELECT time('19:12', '3 hours');
+SELECT time('19:12', '35 minutes');
+SELECT time('19:12', '-45.1 seconds');
+
+SELECT date('2021-11-26', 'start of year');
+SELECT time('16:32', 'start of day');
+
+SELECT time('12:33:24', 'localtime'), -- 16:33:24
+        time('16:33:24', 'utc'); 
+       
+        
+SELECT date('2021-12-01', 'weekday 0'), 
+        date('2021-12-01', 'weekday 1'), 
+        date('2021-12-01', 'weekday 6');
+        
+       
+SELECT date('now', '-2 days', '1 months'), 
+    datetime('2021-12-01 12:33', 'start of day', '5 days');
+
+-- %d: день месяца в формате 00
+-- %f: секунды в формате SS.SSS
+-- %H: час в формате 00-24
+-- %j: день года в формате 001-366
+-- %J: количество дней с начала юлианской эпохи
+-- %m: месяц в формате 01-12
+-- %M: минута в формате 00-59
+-- %s: количество секунда с 1970-01-01
+-- %S: секунды в формате 00-59
+-- %w: день недели в формате 0-6, где воскресение имеет номер 0
+-- %W: номер недели года в формате 00-53
+-- %Y: год в формате 0000-9999
+-- %%: экраниурет символ %   
+   
+SELECT strftime('%d.%m.%Y', '2021-12-01');
+
+-- YYYY-MM-DD HH:MM:SS
+
+SELECT name, 
+    date('now')-date_of_birth AS age 
+FROM users;
+
+SELECT name, date_of_birth 
+FROM users
+WHERE date_of_birth BETWEEN '1950-01-01' AND '2000-12-31';
+
+INSERT INTO users (name, date_of_birth) VALUES
+('Ольга', date('now', '-50 years'));
+
+--INSERT INTO orders (date_time)
+--VALUES (julianday('2021-11-30 22:01:15')),
+--(julianday('now'));
+
+SELECT date_time, datetime(date_time) FROM orders;
+
+CREATE TABLE orders_int(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date_time INTEGER NOT NULL
+);
+
+--INSERT INTO orders_int (date_time)
+--VALUES (strftime('%s', '2021-11-30 22:01:15')),
+--(strftime('%s', 'now')),
+--(strftime('%s', 'now', '-5 hours'));
+
+SELECT date_time, datetime(date_time, 'unixepoch') FROM orders_int;

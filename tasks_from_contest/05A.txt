@@ -1,0 +1,26 @@
+WITH Scrubs (value) AS
+	(
+		SELECT 
+			(SELECT COUNT(MedicalInsurance.Number)
+			FROM MedicalInsurance 
+			JOIN PersonalData, Doctors
+			ON PersonalData.ID = Doctors.PersonalDataID
+			AND MedicalInsurance.ID = PersonalData.MedicalInsuranceID
+			WHERE MedicalInsurance.Status = 'active' 
+			AND PersonalData.ID NOT IN (
+										SELECT Patients.PersonalDataID 
+										FROM Patients
+									   )
+    )
+		+
+		(
+			SELECT 
+				COUNT(MedicalInsurance.Number)
+				FROM MedicalInsurance 
+				JOIN PersonalData, Patients
+				ON PersonalData.ID = Patients.PersonalDataID
+				AND MedicalInsurance.ID = PersonalData.MedicalInsuranceID
+				WHERE MedicalInsurance.Status = 'active'
+		)
+	)
+SELECT Scrubs.value AS TotalPeopleWithMI FROM Scrubs;

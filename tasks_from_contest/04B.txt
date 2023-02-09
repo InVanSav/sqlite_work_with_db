@@ -1,0 +1,11 @@
+SELECT Sellers.LastName || " " || Sellers.FirstName AS SellerFullName,
+SUM(SalesItems.QuantitySold * Products.SellingPrice) AS TotalRevenue,
+COUNT(DISTINCT Sales.ID) AS CountOfSales
+FROM SalesItems
+JOIN Sellers, Sales, Products
+ON Sales.ID = SalesItems.SaleID 
+AND Sellers.ID = Sales.SellerID
+AND Products.ID = SalesItems.ProductID
+GROUP BY SellerFullName
+HAVING CountOfSales > 0
+ORDER BY TotalRevenue DESC LIMIT 10;

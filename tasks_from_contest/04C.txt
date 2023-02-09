@@ -1,0 +1,20 @@
+SELECT 
+Products.Title as Title, 
+Categories.Name as CategoryName, 
+Products.SellingPrice as SellingPrice 
+FROM Products 
+LEFT JOIN Categories 
+ON Products.CategoryID = Categories.ID 
+WHERE 
+(
+	SELECT SUM(SalesItems.QuantitySold) 
+	FROM SalesItems 
+	WHERE SalesItems.ProductID = Products.ID
+) 
+== 
+(
+	SELECT SUM(PurchaseItems.QuantityBought) 
+	FROM PurchaseItems 
+	WHERE PurchaseItems.ProductID = Products.ID
+) 
+ORDER BY Products.SellingPrice DESC;

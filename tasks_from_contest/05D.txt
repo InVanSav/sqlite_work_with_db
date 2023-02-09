@@ -1,0 +1,21 @@
+WITH IncidentsCTE (name, title, row_number, result) AS
+(
+	SELECT 
+		Specialists.FullName AS FullName,
+		Incidents.Title AS IncidentTitle,
+		ROW_NUMBER() OVER(
+							PARTITION BY Specialists.ID 
+							ORDER BY Specialists.ID, Incidents.CreatedAt
+						) AS RowNumber,
+		Specialists.Resolved AS Resolved
+		FROM Specialists 
+		JOIN Incidents, Assignment 
+		ON Specialists.ID = Assignment.SpecialistID
+		AND Incidents.ID = Assignment.IncidentID
+		WHERE Assignment.SpecialistID = Specialists.ID
+)
+SELECT 
+	IncidentsCTE.name, 
+	IncidentsCTE.title 
+	FROM IncidentsCTE
+	WHERE IncidentsCTE.result < IncidentsCTE.row_number;

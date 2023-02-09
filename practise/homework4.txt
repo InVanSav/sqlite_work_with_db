@@ -1,0 +1,269 @@
+--- Homework ---
+
+--CREATE TABLE Owners (
+--	id INTEGER PRIMARY KEY AUTOINCREMENT,
+--	name TEXT NOT NULL,
+--	car_id INTEGER UNIQUE
+--)
+
+
+--INSERT INTO Owners (name, car_id) VALUES
+--("Nikolay", (SELECT id FROM Cars WHERE id != 2)),
+--("Aleksey", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Oleg", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Kirill", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Egor", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Dmitry", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Anastasiya", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Victor", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Sergey", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Kim-Sung-Gu", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Pavel", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Ivan", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Andrey", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Olga", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Tatyana", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Alina", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Polina", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Eva", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Anna", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Elena", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Ruslan", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id)),
+--("Timofey", (SELECT car_id FROM Owners JOIN Cars ON Owners.car_id = Cars.id));
+
+
+--SELECT name,
+--(SELECT mark FROM Cars WHERE mark IN ('Audi', 'Mercedez-Benz', 'Toyota') AND Cars.id = Owners.car_id) AS marks
+--FROM Owners
+--WHERE car_id IN
+--(SELECT id FROM Cars WHERE mark IN ('Audi', 'Mercedez-Benz', 'Toyota'));
+
+
+--SELECT mark, model, price FROM Cars 
+--WHERE price BETWEEN 
+--(SELECT AVG(price) FROM Cars) 
+--AND 
+--(SELECT MAX(price) FROM Cars);
+
+
+--UPDATE Cars 
+--SET price = (SELECT price FROM Cars WHERE id = (SELECT car_id FROM Owners WHERE id = 4)) * 1.2
+--WHERE id = (SELECT car_id FROM Owners WHERE id = 4);
+
+
+--SELECT * FROM Cars WHERE id IN (SELECT car_id FROM Owners);
+
+
+--INSERT INTO Providers (name, amount_of_deal) VALUES 
+--("Рот-Фронт", 20000),
+--("Яшкино", 10789),
+--("Сникерс", 19345),
+--("Лейс", 1490),
+--("КДВ", 3956),
+--("Элинар-Бройлер", 8376),
+--("Балтагрос", 4908),
+--("Агра", 13980),
+--("Балтийская компания ООО", 25708),
+--("SCG", 43900),
+--("Cresko Group", 1980),
+--("Interbev", 7635),
+--("Мельница", 20987),
+--("Альфа Фуд", 1098),
+--("ООО КПС Урал", 15000),
+--("Уплетаево", 13008);
+
+
+
+--INSERT INTO Manufactures (name) VALUES 
+--("Черкизово"),
+--("Мираторг"),
+--("Приосколье"),
+--("Белгранкорм"),
+--("Агрокомплекс"),
+--("Чароен Прокланд"),
+--("Белая птица"),
+--("Продо"),
+--("Русагро"),
+--("Агро-Белогорье"),
+--("Великолукский СК"),
+--("Сибирская аграрная группа"),
+--("Копитания"),
+--("Хорошее дело"),
+--("Агроэко"),
+--("Евродон");
+
+
+--INSERT INTO Product_Categories (name) VALUES
+--("Рыба"),
+--("Молочные продукты"),
+--("Мясо"),
+--("Яйца"),
+--("Хлебобулочные изделия"),
+--("Крупы"),
+--("Бобовые"),
+--("Овощи"),
+--("Фрукты и ягоды"),
+--("Орехи и грибы"),
+--("Кондитерские изделия"),
+--("Напитки");
+
+
+--INSERT INTO Products (name, provider_id, manufactur_id, category_id, price, weight_volume, actual_count) 
+--VALUES
+--("Вода негазированная", 
+--(SELECT id FROM Providers WHERE name = 'Альфа Фуд'),
+--(SELECT id FROM Manufactures WHERE name = 'Приосколье'),
+--(SELECT id FROM Product_Categories WHERE name = 'Напитки'),
+--59, 1.5, 10),
+--("Тушенка из свинины", 
+--(SELECT id FROM Providers WHERE name = 'Альфа Фуд'),
+--(SELECT id FROM Manufactures WHERE name = 'Белгранкорм'),
+--(SELECT id FROM Product_Categories WHERE name = 'Мясо'),
+--89, 0.3, 32),
+--("Кета", 
+--(SELECT id FROM Providers WHERE name = 'Interbev'),
+--(SELECT id FROM Manufactures WHERE name = 'Белая птица'),
+--(SELECT id FROM Product_Categories WHERE name = 'Рыба'),
+--249, 2.0, 12),
+--("Иваси", 
+--(SELECT id FROM Providers WHERE name = 'Балтийская компания ООО'),
+--(SELECT id FROM Manufactures WHERE name = 'Великолукский СК'),
+--(SELECT id FROM Product_Categories WHERE name = 'Рыба'),
+--90, 1.0, 18),
+--("Вода газированнная", 
+--(SELECT id FROM Providers WHERE name = 'Агра'),
+--(SELECT id FROM Manufactures WHERE name = 'Мираторг'),
+--(SELECT id FROM Product_Categories WHERE name = 'Напитки'),
+--12, 0.021, 98),
+--("Сосиски с сыром", 
+--(SELECT id FROM Providers WHERE name = 'Interbev'),
+--(SELECT id FROM Manufactures WHERE name = 'Копитания'),
+--(SELECT id FROM Product_Categories WHERE name = 'Мясо'),
+--20, 0.305, 45);
+
+
+
+--INSERT INTO Movements_Of_Product (product_id, provider_id, manufactur_id, category_id, receipt, sale) 
+--VALUES
+--(
+--(SELECT id FROM Products WHERE name = "Вода негазированная"), 
+--(SELECT id FROM Providers WHERE id = 14),
+--(SELECT id FROM Manufactures WHERE id = 3),
+--(SELECT id FROM Product_Categories WHERE id = 12),
+--103, 54
+--),
+--(
+--(SELECT id FROM Products WHERE name = "Тушенка из свинины"), 
+--(SELECT id FROM Providers WHERE id = 14),
+--(SELECT id FROM Manufactures WHERE id = 4),
+--(SELECT id FROM Product_Categories WHERE id = 3),
+--43, 22
+--),
+--(
+--(SELECT id FROM Products WHERE name = "Кета"), 
+--(SELECT id FROM Providers WHERE id = 12),
+--(SELECT id FROM Manufactures WHERE id = 7),
+--(SELECT id FROM Product_Categories WHERE id = 1),
+--45, 2
+--),
+--(
+--(SELECT id FROM Products WHERE name = "Вода газированнная"), 
+--(SELECT id FROM Providers WHERE id = 8),
+--(SELECT id FROM Manufactures WHERE id = 2),
+--(SELECT id FROM Product_Categories WHERE id = 12),
+--84, 83
+--),
+--(
+--(SELECT id FROM Products WHERE name = "Иваси"), 
+--(SELECT id FROM Providers WHERE id = 9),
+--(SELECT id FROM Manufactures WHERE id = 11),
+--(SELECT id FROM Product_Categories WHERE id = 1),
+--50, 53
+--),
+--(
+--(SELECT id FROM Products WHERE name = "Сосиски с сыром"), 
+--(SELECT id FROM Providers WHERE id = 12),
+--(SELECT id FROM Manufactures WHERE id = 13),
+--(SELECT id FROM Product_Categories WHERE id = 3),
+--14, 6
+--);
+
+
+--SELECT Movements_Of_Product.product_id,
+--Products.name AS product_name, 
+--Products.price AS product_price,
+--Providers.name AS provider_name,
+--Manufactures.name AS manufacture_name,
+--Movements_Of_Product.receipt 
+--FROM Movements_Of_Product
+--JOIN Products, Providers, Manufactures
+--ON Movements_Of_Product.product_id = Products.id 
+--AND Movements_Of_Product.provider_id = Providers.id 
+--AND Movements_Of_Product.manufactur_id = Manufactures.id
+--ORDER BY Movements_Of_Product.product_id ASC;
+
+
+--SELECT Movements_Of_Product.product_id,
+--Products.name AS product_name, 
+--Products.price AS product_price,
+--Providers.name AS provider_name,
+--Manufactures.name AS manufacture_name,
+--Movements_Of_Product.receipt 
+--FROM Movements_Of_Product
+--JOIN Products, Providers, Manufactures
+--ON Movements_Of_Product.product_id = Products.id 
+--AND Movements_Of_Product.provider_id = Providers.id 
+--AND Movements_Of_Product.manufactur_id = Manufactures.id
+--WHERE Products.price * Products.actual_count < 5000
+--ORDER BY Movements_Of_Product.receipt DESC;
+
+
+--SELECT Movements_Of_Product.product_id,
+--Products.name AS product_name, 
+--Products.price AS product_price,
+--Providers.name AS provider_name,
+--Manufactures.name AS manufacture_name,
+--Movements_Of_Product.receipt,
+--Movements_Of_Product.sale 
+--FROM Movements_Of_Product
+--LEFT JOIN Products, Providers, Manufactures
+--ON Movements_Of_Product.product_id = Products.id 
+--AND Movements_Of_Product.provider_id = Providers.id 
+--AND Movements_Of_Product.manufactur_id = Manufactures.id
+--ORDER BY Products.price ASC;
+
+
+--SELECT Movements_Of_Product.provider_id,
+--Providers.name AS provider_name, Providers.amount_of_deal AS sum_of_deal,
+--Movements_Of_Product.manufactur_id,
+--Manufactures.name AS manufacture_name
+--FROM Movements_Of_Product
+--JOIN Providers, Manufactures
+--ON Movements_Of_Product.provider_id = Providers.id 
+--AND Movements_Of_Product.manufactur_id = Manufactures.id
+--ORDER BY Movements_Of_Product.provider_id ASC;
+
+
+--SELECT * FROM Manufactures WHERE id IN (SELECT id FROM Providers);
+
+
+--SELECT name, amount_of_deal,
+--CASE
+--	WHEN amount_of_deal < 10000
+--		THEN '10%'
+--	WHEN amount_of_deal >= 10000 AND amount_of_deal < 20000
+--		THEN '20%'
+--	WHEN amount_of_deal >= 20000 AND amount_of_deal < 30000
+--		THEN '30%'
+--	ELSE '0%'
+--END AS percentage_discount,
+--CASE
+--	WHEN amount_of_deal < 10000
+--		THEN Providers.amount_of_deal - (Providers.amount_of_deal * 0.1)
+--	WHEN amount_of_deal >= 10000 AND amount_of_deal < 20000
+--		THEN Providers.amount_of_deal - (Providers.amount_of_deal * 0.2)
+--	WHEN amount_of_deal >= 20000 AND amount_of_deal < 30000
+--		THEN Providers.amount_of_deal - (Providers.amount_of_deal * 0.3)
+--	ELSE Providers.amount_of_deal
+--END AS amount_discount
+--FROM Providers;

@@ -1,0 +1,180 @@
+CREATE TABLE products
+(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    company TEXT NOT NULL,
+    items_count INTEGER DEFAULT 0,
+    price INTEGER
+);
+ 
+CREATE TABLE customers
+(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL
+);
+CREATE TABLE orders
+(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id INTEGER NOT NULL,
+    customer_id INTEGER NOT NULL,
+    created_at TEXT NOT NULL,
+    items_count INTEGER DEFAULT 1,
+    price INTEGER NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+);
+
+INSERT INTO products (name, company, items_count, price)
+VALUES
+('iPhone 13', 'Apple', 3, 76000),
+('iPhone 12', 'Apple', 2, 51000),
+('Galaxy S21', 'Samsung', 2, 56000),
+('Galaxy S20', 'Samsung', 1, 41000),
+('P40 Pro', 'Huawei', 5, 36000);
+ 
+INSERT INTO customers(name) VALUES ('Дмитрий'), ('Николай'),('Иван');
+ 
+INSERT INTO orders (product_id, customer_id, created_at, items_count, price) VALUES
+((SELECT id FROM products WHERE name='Galaxy S21'),(SELECT id FROM customers WHERE name='Дмитрий'),
+ '2021-11-30', 2, (SELECT price FROM products WHERE name='Galaxy S21')),
+((SELECT id FROM products WHERE name='iPhone 12'), (SELECT id FROM customers WHERE name='Дмитрий'),
+ '2021-10-29', 1, (SELECT price FROM products WHERE name='iPhone 12')),
+((SELECT id FROM products WHERE name='iPhone 12'), (SELECT id FROM customers WHERE name='Николай'),
+  '2021-11-29', 1, (SELECT price FROM products WHERE name='iPhone 12'));
+
+--Неявное соединение таблиц	
+SELECT * FROM orders, customers;
+
+SELECT * FROM orders, customers
+WHERE orders.customer_id = customers.id;
+
+SELECT customers.name, products.name, orders.created_at 
+FROM orders, customers, products
+WHERE orders.customer_id = customers.id AND orders.product_id=products.id;
+
+SELECT C.name, P.name, O.*
+FROM orders AS O, customers AS C, products AS P
+WHERE O.customer_id = C.id AND O.product_id=P.id;
+
+
+--INNER JOIN
+SELECT orders.created_at, orders.items_count, products.name
+FROM orders
+JOIN products ON products.id = orders.product_id;
+
+SELECT orders.created_at, customers.name, products.name
+FROM orders
+JOIN products ON products.id = orders.product_id
+JOIN customers ON customers.id=orders.customer_id;
+
+SELECT orders.created_at, customers.name, products.name
+FROM orders
+JOIN products ON products.id = orders.product_id
+JOIN customers ON customers.id=orders.customer_id
+WHERE products.price > 45000
+ORDER BY customers.name;
+
+SELECT orders.created_at, customers.name, products.name
+FROM orders
+JOIN products ON products.id = orders.product_id AND products.company='Apple'
+JOIN customers ON customers.id=orders.customer_id
+ORDER BY customers.name;
+
+
+--LEFT JOIN
+SELECT name, created_at, items_count, price, product_id 
+FROM orders LEFT JOIN customers 
+ON orders.customer_id = customers.id;
+
+	-- INNER JOIN
+SELECT name, created_at, items_count, price 
+FROM customers JOIN orders 
+ON orders.customer_id = customers.id;
+
+	-- LEFT JOIN
+SELECT name, created_at, items_count, price 
+FROM customers LEFT JOIN orders 
+ON orders.customer_id = customers.id;
+
+SELECT customers.name, orders.created_at, 
+       products.name, products.company
+FROM orders 
+LEFT JOIN customers ON orders.customer_id = customers.id
+LEFT JOIN products ON orders.product_id = products.id;
+
+SELECT customers.name, orders.created_at, 
+       products.name, products.company
+FROM orders 
+LEFT JOIN customers ON orders.customer_id = customers.id
+LEFT JOIN products ON orders.product_id = products.id
+WHERE products.price < 55000
+ORDER BY orders.created_at;
+
+SELECT name FROM customers
+LEFT JOIN orders ON customers.id = orders.customer_id
+WHERE orders.customer_id IS NULL;
+
+SELECT customers.name, orders.created_at, 
+       products.name, products.company
+FROM orders 
+JOIN products ON orders.product_id = products.id AND products.price > 45000
+LEFT JOIN customers ON orders.customer_id = customers.id
+ORDER BY orders.created_at;
+
+
+--UNION
+DROP TABLE IF EXISTS clients;
+DROP TABLE IF EXISTS employees;
+ 
+CREATE TABLE clients(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    age INTEGER,
+    account_sum INTEGER NOT NULL
+);
+CREATE TABLE employees(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    age INTEGER
+);
+  
+INSERT INTO clients(name, age, account_sum) VALUES
+('Дмитрий', 37, 4000), ('Александр', 25, 3000), ('Андрей', 29, 3500),
+('Елизавета', 41, 2500), ('Екатерина', 28, 2900), ('Светлана', 34, 4100);
+  
+INSERT INTO employees(name, age) VALUES
+('Дмитрий', 37), ('Евгений', 25), ('Андрей', 29), ('Елизавета', 41), ('Алиса', 31);
+
+SELECT name, age 
+FROM clients
+UNION SELECT name, age FROM employees;
+
+SELECT name, age , account_sum
+FROM clients
+UNION SELECT name, age FROM employees;
+
+SELECT name, age 
+FROM clients
+UNION ALL SELECT name, age FROM employees;
+
+SELECT name, age, account_sum + account_sum * 0.1 AS total_sum 
+FROM clients WHERE account_sum < 3000
+UNION SELECT name, age, account_sum + account_sum * 0.3 AS total_sum 
+FROM clients WHERE account_sum >= 3000;
+
+--EXCEPT
+SELECT name, age
+FROM clients
+EXCEPT SELECT name, age 
+FROM employees;
+
+SELECT name, age
+FROM employees
+EXCEPT SELECT name, age 
+FROM clients;
+
+--INTERSECT
+SELECT name, age
+FROM employees
+INTERSECT SELECT name, age 
+FROM clients;

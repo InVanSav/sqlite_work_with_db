@@ -1,0 +1,6 @@
+SELECT Departments.Name AS DepartmentName,
+COUNT(Employees.ID) AS TotalPeople
+FROM Departments
+LEFT JOIN Employees
+ON Employees.DepartmentID = Departments.ID
+GROUP BY Departments.Name;

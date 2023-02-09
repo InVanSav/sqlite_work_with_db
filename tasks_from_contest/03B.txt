@@ -1,0 +1,5 @@
+SELECT Cars.CarNumber AS CarNumber, ParkingPlaces.ParkingNumber AS ParkingNumber
+FROM CarsParkings
+JOIN Cars, ParkingPlaces
+ON CarsParkings.CarID = Cars.ID
+AND CarsParkings.ParkingID = ParkingPlaces.ID;

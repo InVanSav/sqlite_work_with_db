@@ -1,0 +1,26 @@
+CREATE VIEW ShowITEmployees AS
+	WITH RECURSIVE EmployeesView (id, name, position, chief_id) AS
+	(
+		SELECT Employees.ID, Employees.FullName, Positions.Title, Employees.ChiefID 
+			FROM Employees 
+			JOIN Positions
+			ON Positions.ID = Employees.PositionID
+			WHERE Positions.Title = 'PC Principal'
+		UNION ALL 
+		SELECT Employees.ID, Employees.FullName, EmployeesView.position, Employees.ChiefID 
+			FROM Employees
+			JOIN EmployeesView
+			ON Employees.ChiefID = EmployeesView.id
+	)
+	SELECT 
+		EmployeesView.id AS 'ID', 
+		EmployeesView.name AS 'FullName', 
+		(
+			SELECT Positions.Title 
+				FROM Employees 
+				JOIN Positions
+				ON Positions.ID = Employees.PositionID 
+				WHERE EmployeesView.id = Employees.ID
+		) AS 'Position', 
+		EmployeesView.chief_id AS 'ChiefID' 
+	FROM EmployeesView;

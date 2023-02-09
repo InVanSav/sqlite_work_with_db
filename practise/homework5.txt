@@ -1,0 +1,98 @@
+SELECT 
+Product_Categories.name AS category_name,
+Products.name AS product_name,
+SUM(Products.actual_count) OVER (ORDER BY Product_Categories.name) AS count,
+SUM(Products.price) OVER (ORDER BY Product_Categories.name) AS price
+FROM Products 
+JOIN Product_Categories 
+ON Products.category_id = Product_Categories.id
+ORDER BY price ASC;
+
+
+SELECT 
+Products.name AS product_name,
+Products.actual_count AS count,
+AVG(Products.price) OVER 
+(ORDER BY Products.name ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS average_price
+FROM Products 
+ORDER BY average_price;
+
+
+WITH Product (name, price, manufacturer, provider) AS
+(SELECT Products.name, Products.price, Manufactures.name, Providers.name
+FROM Products
+JOIN Manufactures, Providers
+ON Products.manufactur_id  = Manufactures.id 
+AND Products.provider_id = Providers.id
+AND Products.price > 70)
+SELECT * FROM Product ORDER BY price;
+
+
+WITH Manufactur (name) AS
+(SELECT Manufactures.name FROM Manufactures
+INTERSECT
+SELECT Providers.name FROM Providers),
+Product (name, count, price) AS 
+(SELECT Products.name, Products.actual_count, Products.price FROM Products)
+SELECT Manufactur.name AS manufacturer, Product.name, Product.count, Product.price
+FROM Product JOIN Manufactur;
+
+
+CREATE TABLE Departaments (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	subdivision TEXT,
+	job_title TEXT
+);
+
+
+INSERT INTO Departaments (subdivision, job_title) VALUES
+("IT", "middle_developer"),
+("Security_IT", "pentester"),
+("Design", "game_designer"),
+("Security_IT", "development_specialist"),
+("IT", "senior_developer"),
+("IT", "junior_developer"),
+("Security_IT", "network_specialist"),
+("IT", "team_lead"),
+("Design", "animator"),
+("IT", "HR"),
+("Tester", "software_tester"),
+("IT", "project_manager"),
+("Design", "designer"),
+("IT", "system_administrator"),
+("Tester", "web_app_tester"),
+("Design", "fashion_designer"),
+("Security_IT", "guard"),
+("IT", "systems_analyst"),
+("Tester", "game_tester"),
+("Design", "interior_designer");
+
+
+WITH Job_Title (id, subdivision, name) AS
+(SELECT Departaments.id, Departaments.subdivision, Departaments.job_title
+FROM Departaments WHERE Departaments.subdivision = "IT"
+UNION ALL
+SELECT Job_Title.id+1, Job_Title.subdivision, Job_Title.name 
+FROM Job_Title WHERE Job_Title.id = 20)
+SELECT Job_Title.name FROM Job_Title;
+
+SELECT Departaments.id, Departaments.subdivision, Departaments.job_title
+FROM Departaments WHERE Departaments.subdivision = "IT"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

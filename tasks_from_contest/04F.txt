@@ -1,0 +1,22 @@
+SELECT Employees.FullName AS EmployeeFullNames,
+ROUND(
+    SUM(Positions.Salary * Salaries.SalaryPercentage)
+) AS SumSalary 
+FROM Employees
+JOIN Salaries, Positions 
+ON Salaries.EmployeeID = Employees.ID 
+AND Positions.ID = Salaries.PositionID 
+GROUP BY EmployeeFullNames
+HAVING SumSalary 
+< 
+(SELECT ROUND(AVG(SumSalary))
+FROM (
+    SELECT ROUND(
+        SUM(Positions.Salary * Salaries.SalaryPercentage)
+    ) AS SumSalary
+FROM Employees
+JOIN Salaries, Positions 
+ON Positions.ID = Salaries.PositionID
+AND Salaries.EmployeeID = Employees.ID
+GROUP BY Employees.ID))
+ORDER BY SumSalary ASC;

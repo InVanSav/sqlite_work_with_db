@@ -1,0 +1,50 @@
+WITH DateTimes(times) AS (
+	SELECT DATE(incident_table.timestamp) 
+		FROM incident_table
+		WHERE DATE(incident_table.timestamp) >= 
+			  DATE(
+			  		(SELECT 
+				  		DATE(MAX(incident_table.timestamp))
+				  		FROM incident_table
+				  	), '-29 days'
+			  	  )
+		GROUP BY DATE(incident_table.timestamp)
+		ORDER BY DATE(incident_table.timestamp)
+)
+SELECT
+	DateTimes.times AS date,
+	(SELECT COUNT(*) FROM
+			(SELECT incident_table.id, timestamp, task_id, label 
+				FROM incident_table 
+				INNER JOIN statuses
+				ON incident_table.status_type == statuses.id
+			) AS incident_table_1
+		WHERE incident_table_1.id ==
+	(SELECT incident_table_2.id FROM
+		(SELECT incident_table.id, incident_table.timestamp, incident_table.task_id, statuses.label
+			FROM incident_table
+			INNER JOIN statuses ON incident_table.status_type == statuses.id) AS incident_table_2
+			WHERE incident_table_2.task_id == incident_table_1.task_id 
+			AND DATE(incident_table_2.timestamp) <= DateTimes.times
+			ORDER BY incident_table_2.timestamp DESC, incident_table_2.id DESC
+			LIMIT 1
+	) AND incident_table_1.label == 'new'
+	) AS number_of_new,
+	(SELECT COUNT(*) FROM
+			(SELECT incident_table.id, incident_table.timestamp, incident_table.task_id, statuses.label 
+				FROM incident_table 
+				INNER JOIN statuses
+				ON incident_table.status_type == statuses.id
+			) AS incident_table_1
+		WHERE incident_table_1.id == 
+	(SELECT incident_table_2.id FROM 
+		(SELECT incident_table.id, incident_table.timestamp, incident_table.task_id, statuses.label 
+			FROM incident_table
+			INNER JOIN statuses ON incident_table.status_type == statuses.id) AS incident_table_2
+			WHERE incident_table_2.task_id == incident_table_1.task_id 
+			AND DATE(incident_table_2.timestamp) <= DateTimes.times
+			ORDER BY incident_table_2.timestamp DESC, incident_table_2.id DESC
+			LIMIT 1
+	) AND incident_table_1.label == 'completed'
+	) AS number_of_completed
+FROM DateTimes;

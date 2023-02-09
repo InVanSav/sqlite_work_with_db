@@ -1,0 +1,94 @@
+SELECT name, company, items_count, SUM(items_count) OVER() AS 'Sum' 
+FROM products;
+
+SELECT   name, company, items_count, SUM(items_count) OVER(PARTITION BY company) AS 'Sum' 
+FROM products;
+
+SELECT name, company, items_count, SUM(items_count) OVER(PARTITION BY company ORDER BY name) AS 'Sum' 
+FROM products;
+
+
+--UNBOUNDED PRECEDING — указывает, что окно начинается с первой строки группы
+--UNBOUNDED FOLLOWING – с помощью данной инструкции можно указать, что окно заканчивается на последней строке группы
+--CURRENT ROW – инструкция указывает, что окно начинается или заканчивается на текущей строке
+--BETWEEN «граница окна» AND «граница окна» — указывает нижнюю и верхнюю границу окна
+--«Значение» PRECEDING – определяет число строк перед текущей строкой (не допускается в предложении RANGE)
+--«Значение» FOLLOWING — определяет число строк после текущей строки (не допускается в предложении RANGE)
+
+SELECT name, company, items_count, SUM(items_count) OVER(PARTITION BY company ORDER BY name
+ROWS BETWEEN CURRENT ROW AND 1 FOLLOWING) AS 'Sum' 
+FROM products;
+
+--Агрегатные функции
+--SUM – возвращает сумму значений в столбце
+--COUNT — вычисляет количество значений в столбце (значения NULL не учитываются)
+--AVG — определяет среднее значение в столбце
+--MAX — определяет максимальное значение в столбце
+--MIN — определяет минимальное значение в столбце
+
+SELECT name, company, items_count,
+SUM(items_count) OVER(PARTITION BY company) AS 'Sum',
+COUNT(items_count) OVER(PARTITION BY company) AS 'Count',
+AVG(items_count) OVER(PARTITION BY company) AS 'Avg', 
+MAX(items_count) OVER(PARTITION BY company) AS 'Max', 
+MIN(items_count) OVER(PARTITION BY company) AS 'Min' 
+FROM products;
+
+SELECT items_count,
+SUM(items_count) AS 'Sum',
+COUNT(items_count) AS 'Count',
+AVG(items_count) AS 'Avg', 
+MAX(items_count) AS 'Max', 
+MIN(items_count) AS 'Min' 
+FROM products;
+
+--Ранжирующие функции
+--ROW_NUMBER – функция возвращает номер строки и используется для нумерации
+--RANK — функция возвращает ранг каждой строки. В данном случае значения уже анализируются и,
+--		 в случае нахождения одинаковых, возвращает одинаковый ранг с пропуском следующего значения
+--DENSE_RANK — функция возвращает ранг каждой строки. Но в отличие от функции RANK,
+--			   она для одинаковых значений возвращает ранг, не пропуская следующий
+--NTILE – это функция, которая позволяет определить к какой группе относится текущая строка.
+--		  Количество групп задается в скобках
+
+SELECT name, company, items_count,
+ROW_NUMBER() OVER(PARTITION BY company ORDER BY name) AS 'Row_number',
+RANK() OVER(PARTITION BY company ORDER BY name) AS 'Rank',
+DENSE_RANK() OVER(PARTITION BY company ORDER BY name) AS 'Dense_Rank',
+NTILE(2) OVER(PARTITION BY company ORDER BY name) AS 'Ntile'
+FROM products;
+
+--Функции смещения
+--LAG - обращается к данным из предыдущей строки окна
+--LEAD – обращается к данным из следующей строки окна
+--	Функции можно использовать для того, чтобы сравнивать текущее значение строки с предыдущим или следующим.
+--	Имеет три параметра: столбец, значение которого необходимо вернуть,
+--	количество строк для смещения (по умолчанию 1),
+--	значение, которое необходимо вернуть, если после смещения возвращается значение NULL;
+--FIRST_VALUE — можно получить первое значение в окне
+--LAST_VALUE — можно получить последнее значение в окне.
+--	В качестве параметра принимают столбец, значение которого необходимо вернуть.
+
+SELECT name, company, items_count,
+LAG(items_count) OVER(PARTITION BY company ORDER BY name) AS 'Lag', 
+LEAD(items_count) OVER(PARTITION BY company ORDER BY name) AS 'Lead', 
+FIRST_VALUE(items_count) OVER(PARTITION BY company ORDER BY name) AS 'First_Value', 
+LAST_VALUE(items_count) OVER(PARTITION BY company ORDER BY name) AS 'Last_Value'
+FROM products;
+
+--Аналитические функции
+--CUME_DIST — вычисляет интегральное распределение (относительное положение) значений в окне
+--PERCENT_RANK — вычисляет относительный ранг строки в окне
+--PERCENTILE_CONT — вычисляет процентиль на основе постоянного распределения значения столбца. 
+--	В качестве параметра принимает процентиль, который необходимо вычислить
+--PERCENTILE_DISC — вычисляет определенный процентиль для отсортированных значений в наборе данных. 
+--	В качестве параметра принимает процентиль, который необходимо вычислить.
+--	У функций PERCENTILE_CONT и PERCENTILE_DISC, столбец, 
+--	по которому будет происходить сортировка, указывается с помощью ключевого слова WITHIN GROUP
+
+SELECT name, company, items_count,
+CUME_DIST() OVER(PARTITION BY company ORDER BY name) AS 'Cume_Dist',
+PERCENT_RANK() OVER(PARTITION BY company ORDER BY name) AS 'Percent_Rank'
+--PERCENTILE_CONT(0.5) OVER(PARTITION BY company ORDER BY items_count) AS 'Percentile_Cont'
+--PERCENTILE_DISC(0.5) OVER(PARTITION BY company ORDER BY items_count) AS 'Percentile_Disc'
+FROM products;
